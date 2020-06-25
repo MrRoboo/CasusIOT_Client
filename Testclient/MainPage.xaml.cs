@@ -31,6 +31,12 @@ namespace Testclient
 
         Raspberry raspberry = new Raspberry();
 
+        GameController gameController;
+
+        ForceSensor forceSensor;
+        const int sensorPin = 0; //Line 0 maps to physical pin number 24 on the RPi2 or RPi3
+        const int gpioPin = 25;
+        
         private Button _button;
 
         //moet nog geimplementeerd worden met forcesensor
@@ -49,6 +55,13 @@ namespace Testclient
 
             //Koppel OnDataOntvangen aan de methode die uitgevoerd worden:
             socketServer.OnDataOntvangen += socketServer.Server_OnDataOntvangen;
+
+            //Init game controller
+            gameController = new GameController(socketClient);
+
+            //Init force sensor
+            forceSensor = new ForceSensor(sensorPin, gpioPin);
+            forceSensor.gameController = gameController;
 
             InitButtons();
 
@@ -77,6 +90,8 @@ namespace Testclient
                     socketClient.Verstuur("bericht vanuit de client");
 
                 }
+
+
             }
         }
 
