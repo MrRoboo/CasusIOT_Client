@@ -4,6 +4,7 @@ using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Runtime.InteropServices.WindowsRuntime;
+using System.Threading;
 using System.Threading.Tasks;
 using Windows.Devices.Gpio;
 using Windows.Foundation;
@@ -30,7 +31,7 @@ namespace Testclient
         SocketServer socketServer;
 
         Raspberry raspberry = new Raspberry();
-
+        Led led;
         GameController gameController;
 
         ForceSensor forceSensor;
@@ -40,7 +41,7 @@ namespace Testclient
         private Button _button;
 
         //moet nog geimplementeerd worden met forcesensor
-        private bool _isObjectTouched = false;
+        private bool _isObjectTouched = true;
         private string _objectTouchmessage;
 
         //############################################
@@ -56,6 +57,10 @@ namespace Testclient
             //Koppel OnDataOntvangen aan de methode die uitgevoerd worden:
             socketServer.OnDataOntvangen += socketServer.Server_OnDataOntvangen;
 
+            //init leds
+            led = new Led(raspberry, 21);
+            led.led.Write(GpioPinValue.Low);
+
             //Init game controller
             gameController = new GameController(socketClient);
 
@@ -64,9 +69,11 @@ namespace Testclient
             forceSensor.gameController = gameController;
 
             InitButtons();
-
-            Aansturen();
+            Thread main = new Thread(new ThreadStart(Aansturen));
+            main.Start();
+            //Aansturen();
         }
+
 
 
         //############################################
