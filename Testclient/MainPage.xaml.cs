@@ -83,18 +83,21 @@ namespace Testclient
         //Bepaald flow van het programma
         private void Aansturen()
         {
-            while (true)
+            while (gameController.gameState != "end")
             {
+                //wanneer hij data ontvangt wordt deze true
                 if (socketServer.getReady())
                 {
                     socketServer.setReady(false);
                     String dataString = socketServer.getData();
                     Debug.WriteLine(dataString);
-
-                    //De delay voorkomt de spam van berichten in de console tijdens het testen. 
-                    //omdat de data van client naar server en visa versa wordt verstuurd.
-                    Task.Delay(500).Wait();
-                    socketClient.Verstuur("bericht vanuit de client");
+                    if ( dataString == "start" || dataString == "end")
+                    {
+                        gameController.SetGameState(dataString);
+                    } else if ( dataString == "touch")
+                    {
+                        gameController.SetTouchState(dataString);
+                    }
 
                 }
 

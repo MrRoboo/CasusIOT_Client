@@ -9,15 +9,40 @@ namespace Testclient
 {
     class GameController
     {
-
+        public string gameState = "pending";
+        public bool touchState = false;
         private SocketClient client;
+
 
         public GameController(SocketClient client)
         {
             this.client = client;
         }
 
-        public void AddForceData(int force)
+
+
+        public void SetGameState(string stateData)
+        {
+            gameState = stateData;
+        }
+
+
+
+        public void SetTouchState(string stateData)
+        {
+            if (stateData == "touch")
+            {
+                touchState = true;
+            }
+            else
+            {
+                touchState = false;
+            }
+        }
+
+
+
+        public void SendForceData(int force)
         {
             client.Verstuur("f" + force.ToString());
         }

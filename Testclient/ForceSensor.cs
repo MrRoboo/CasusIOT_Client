@@ -102,6 +102,7 @@ namespace Testclient
                     timePressed = new DateTime();
                 }
                 Debug.WriteLine(resultData);
+                gameController.SetTouchState("off");
                 CalculateForce(resultData);
             }
             else if (resultData < 25 && GetValue() == GpioPinValue.Low)
@@ -117,7 +118,7 @@ namespace Testclient
         private void SendData()
         {
             var highestValue = forceSensorData.Max();
-            gameController.AddForceData(highestValue);
+            gameController.SendForceData(highestValue);
             ClearData();
 
         }
