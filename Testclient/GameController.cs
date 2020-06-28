@@ -4,18 +4,23 @@ using System.Linq;
 using System.Net.Sockets;
 using System.Text;
 using System.Threading.Tasks;
+using Windows.Devices.Gpio;
 
 namespace Testclient
 {
     class GameController
     {
         public string gameState = "pending";
-        public bool touchState = false;
         private SocketClient client;
 
+        private Led ledRood;
+        private Led ledGroen;
 
-        public GameController(SocketClient client)
+
+        public GameController(SocketClient client, Led ledGroen, Led ledRood)
         {
+            this.ledGroen = ledGroen;
+            this.ledRood = ledRood;
             this.client = client;
         }
 
@@ -32,18 +37,30 @@ namespace Testclient
         {
             if (stateData == "touch")
             {
-                touchState = true;
-            }
-            else
+                ledGroen.led.Write(GpioPinValue.Low);
+                ledRood.led.Write(GpioPinValue.High);
+            } else if ( stateData == "off")
             {
-                touchState = false;
+                ledGroen.led.Write(GpioPinValue.High);
+                ledRood.led.Write(GpioPinValue.High);
+            } else if (stateData == "standby")
+            {
+                ledGroen.led.Write(GpioPinValue.High);
+                ledRood.led.Write(GpioPinValue.Low);
             }
         }
 
-
-
-        public void SendForceData(int force)
+        private async Task WaitUntilAsync(Func<bool> func)
         {
+            while (!func())
+                await Task.Delay(100);
+        }
+
+        public async void SendForceData(int force, DateTime pressed)
+        {
+            //string[] list = new string[] { };
+            //await WaitUntilAsync(() => list.Count() == 5);
+            await Task.Delay(1000);
             client.Verstuur("f" + force.ToString());
         }
     }
