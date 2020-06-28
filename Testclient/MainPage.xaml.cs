@@ -33,6 +33,8 @@ namespace Testclient
         Raspberry raspberry = new Raspberry();
         Led led;
         GameController gameController;
+        Watcher watcher;
+        Publisher publisher;
 
         ForceSensor forceSensor;
         const int sensorPin = 0; //Line 0 maps to physical pin number 24 on the RPi2 or RPi3
@@ -54,6 +56,9 @@ namespace Testclient
 
             socketServer = new SocketServer(9000, socketClient);
 
+            watcher = new Watcher();
+            publisher = new Publisher();
+
             //Koppel OnDataOntvangen aan de methode die uitgevoerd worden:
             socketServer.OnDataOntvangen += socketServer.Server_OnDataOntvangen;
 
@@ -73,7 +78,6 @@ namespace Testclient
             main.Start();
             //Aansturen();
         }
-
 
 
         //############################################
@@ -97,11 +101,24 @@ namespace Testclient
                     } else if ( dataString == "touch")
                     {
                         gameController.SetTouchState(dataString);
+                        watcher.startWatcher();
+                        //haalt de distance op met een delay van 5sec
+                        double dist = watcher.GetDistance();
                     }
-
+                    //else if(dataString == "watcher")
+                    //{
+                    //    watcher.startWatcher();
+                    //}
+                    else if(dataString == "publisher")
+                    {
+                        publisher.start();
+                    }
+                    else if (dataString == "stop meting")
+                    {
+                        watcher.stopMeting();
+                        publisher.stopMeting();
+                    }
                 }
-
-
             }
         }
 
