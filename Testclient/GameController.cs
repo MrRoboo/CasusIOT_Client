@@ -75,6 +75,7 @@ namespace Testclient
             client.Verstuur("f" + force.ToString() + "Afstand: " + dist + "DateTime Pressed: " + pressed);
             publisher.stopMeting();
             watcher.stopMeting();
+            watcher.clearDistance();
         }
     }
 }
