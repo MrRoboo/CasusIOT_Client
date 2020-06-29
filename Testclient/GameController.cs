@@ -16,12 +16,17 @@ namespace Testclient
         private Led ledRood;
         private Led ledGroen;
 
+        private Watcher watcher;
+        private Publisher publisher;
+
 
         public GameController(SocketClient client, Led ledGroen, Led ledRood)
         {
             this.ledGroen = ledGroen;
             this.ledRood = ledRood;
             this.client = client;
+            this.watcher = new Watcher();
+            this.publisher = new Publisher();
         }
 
 
@@ -39,6 +44,8 @@ namespace Testclient
             {
                 ledGroen.led.Write(GpioPinValue.Low);
                 ledRood.led.Write(GpioPinValue.High);
+                watcher.startWatcher();
+                
             } else if ( stateData == "off")
             {
                 ledGroen.led.Write(GpioPinValue.High);
@@ -47,6 +54,9 @@ namespace Testclient
             {
                 ledGroen.led.Write(GpioPinValue.High);
                 ledRood.led.Write(GpioPinValue.Low);
+            } else if (stateData == "publisher")
+            {
+                publisher.publish();
             }
         }
 
@@ -60,8 +70,11 @@ namespace Testclient
         {
             //string[] list = new string[] { };
             //await WaitUntilAsync(() => list.Count() == 5);
+            double dist = watcher.GetDistance();
             await Task.Delay(1000);
-            client.Verstuur("f" + force.ToString());
+            client.Verstuur("f" + force.ToString() + "Afstand: " + dist + "DateTime Pressed: " + pressed);
+            publisher.stopMeting();
+            watcher.stopMeting();
         }
     }
 }

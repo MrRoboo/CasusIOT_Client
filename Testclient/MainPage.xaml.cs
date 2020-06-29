@@ -101,6 +101,9 @@ namespace Testclient
                     } else if ( dataString == "off")
                     {
                         gameController.SetTouchState(dataString);
+                    } else if (dataString == "publisher")
+                    {
+                        gameController.SetTouchState(dataString);
                     }
 
                 }

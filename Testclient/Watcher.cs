@@ -72,8 +72,7 @@ namespace Testclient
                 _dist = _distance.CalculateDistance(_rssiList);
                 Debug.WriteLine("Distance uit event: " + _dist);
 
-                _advertisementCount = 0;
-                _rssiList.Clear();
+                
                 if (_checkIfWatcherIsActive())
                 {
                     watcher.Stop();
@@ -102,9 +101,14 @@ namespace Testclient
 
         public double GetDistance()
         {
-
             Task.Delay(5000).Wait();
             return this._dist;
+        }
+
+        public void clearDistance()
+        {
+            _advertisementCount = 0;
+            _rssiList.Clear();
         }
     }
 }
