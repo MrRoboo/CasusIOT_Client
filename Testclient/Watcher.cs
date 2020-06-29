@@ -68,7 +68,7 @@ namespace Testclient
             _advertisementCount += 1;
 
 
-            if (_advertisementCount == 5)
+            if (_advertisementCount == 2)
             {
                 _dist = _distance.CalculateDistance(_rssiList);
                 Debug.WriteLine("Distance uit event: " + _dist);
@@ -102,7 +102,7 @@ namespace Testclient
 
         public double GetDistance()
         {
-            Task.Delay(5000).Wait();
+            Task.Delay(2000).Wait();
             Debug.WriteLine("Get distance: " + this._dist);
             return this._dist;
         }
