@@ -7,101 +7,104 @@ using System.Threading.Tasks;
 using Windows.Devices.Bluetooth.Advertisement;
 using Windows.Storage.Streams;
 
-public class Watcher
+namespace Testclient
 {
-    private BluetoothLEAdvertisementWatcher _watcher;
-    private int _advertisementCount;
-    private List<int> _rssiList;
-    private Distance _distance;
-    private double _dist;
-
-    public double Dist
+    public class Watcher
     {
-        get { return _dist; }
-    }
+        private BluetoothLEAdvertisementWatcher _watcher;
+        private int _advertisementCount;
+        private List<int> _rssiList;
+        private Distance _distance;
+        private double _dist;
 
-    public Watcher()
-    {
-        _watcher = new BluetoothLEAdvertisementWatcher();
-        _advertisementCount = 0;
-        _dist = 0;
-        _rssiList = new List<int>();
-        _distance = new Distance();
-        this.Watch();
-    }
-
-    public void Watch()
-    {
-        //watcher = new BluetoothLEAdvertisementWatcher();
-        _watcher.ScanningMode = BluetoothLEScanningMode.Active;
-
-        _watcher.Received += OnAdvertisementReceived;
-
-        var manufacturerData = new BluetoothLEManufacturerData();
-        manufacturerData.CompanyId = 0xFFFE;
-
-        // Make sure that the buffer length can fit within an advertisement payload (~20 bytes). 
-        // Otherwise you will get an exception.
-        var writer = new DataWriter();
-        writer.WriteString("Hello World");
-        manufacturerData.Data = writer.DetachBuffer();
-
-        _watcher.AdvertisementFilter.Advertisement.ManufacturerData.Add(manufacturerData);
-
-        _watcher.Start();
-    }
-
-    public void startWatcher()
-    {
-        _watcher.Start();
-    }
-
-    private void OnAdvertisementReceived(BluetoothLEAdvertisementWatcher watcher, BluetoothLEAdvertisementReceivedEventArgs eventArgs)
-    {
-        // The received signal strength indicator (RSSI)
-        Int16 rssi = eventArgs.RawSignalStrengthInDBm;
-        _rssiList.Add(rssi);
-
-        _advertisementCount += 1;
-
-
-        if (_advertisementCount == 5)
+        public double Dist
         {
-            _dist = _distance.CalculateDistance(_rssiList);
-            Debug.WriteLine("Distance uit event: " + _dist);
+            get { return _dist; }
+        }
 
+        public Watcher()
+        {
+            _watcher = new BluetoothLEAdvertisementWatcher();
             _advertisementCount = 0;
-            _rssiList.Clear();
-            if (_checkIfWatcherIsActive())
+            _dist = 0;
+            _rssiList = new List<int>();
+            _distance = new Distance();
+            this.Watch();
+        }
+
+        public void Watch()
+        {
+            //watcher = new BluetoothLEAdvertisementWatcher();
+            _watcher.ScanningMode = BluetoothLEScanningMode.Active;
+
+            _watcher.Received += OnAdvertisementReceived;
+
+            var manufacturerData = new BluetoothLEManufacturerData();
+            manufacturerData.CompanyId = 0xFFFE;
+
+            // Make sure that the buffer length can fit within an advertisement payload (~20 bytes). 
+            // Otherwise you will get an exception.
+            var writer = new DataWriter();
+            writer.WriteString("Hello World");
+            manufacturerData.Data = writer.DetachBuffer();
+
+            _watcher.AdvertisementFilter.Advertisement.ManufacturerData.Add(manufacturerData);
+
+            _watcher.Start();
+        }
+
+        public void startWatcher()
+        {
+            _watcher.Start();
+        }
+
+        private void OnAdvertisementReceived(BluetoothLEAdvertisementWatcher watcher, BluetoothLEAdvertisementReceivedEventArgs eventArgs)
+        {
+            // The received signal strength indicator (RSSI)
+            Int16 rssi = eventArgs.RawSignalStrengthInDBm;
+            _rssiList.Add(rssi);
+
+            _advertisementCount += 1;
+
+
+            if (_advertisementCount == 5)
             {
-                watcher.Stop();
+                _dist = _distance.CalculateDistance(_rssiList);
+                Debug.WriteLine("Distance uit event: " + _dist);
+
+                _advertisementCount = 0;
+                _rssiList.Clear();
+                if (_checkIfWatcherIsActive())
+                {
+                    watcher.Stop();
+                }
             }
         }
-    }
 
-    private bool _checkIfWatcherIsActive()
-    {
-        if (_watcher.Status == BluetoothLEAdvertisementWatcherStatus.Started)
+        private bool _checkIfWatcherIsActive()
         {
-            return true;
+            if (_watcher.Status == BluetoothLEAdvertisementWatcherStatus.Started)
+            {
+                return true;
+            }
+            return false;
         }
-        return false;
-    }
 
-    public void stopMeting()
-    {
-        if (_watcher.Status != BluetoothLEAdvertisementWatcherStatus.Stopped)
+        public void stopMeting()
         {
-            _watcher.Stop();
-            Debug.WriteLine("Watcher status: " + _watcher.Status);
-            _dist = 0;
+            if (_watcher.Status != BluetoothLEAdvertisementWatcherStatus.Stopped)
+            {
+                _watcher.Stop();
+                Debug.WriteLine("Watcher status: " + _watcher.Status);
+                _dist = 0;
+            }
         }
-    }
 
-    public double GetDistance()
-    {
+        public double GetDistance()
+        {
 
-        Task.Delay(5000).Wait();
-        return this._dist;
+            Task.Delay(5000).Wait();
+            return this._dist;
+        }
     }
 }

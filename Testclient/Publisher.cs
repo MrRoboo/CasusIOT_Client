@@ -7,7 +7,8 @@ using System.Threading.Tasks;
 using Windows.Devices.Bluetooth.Advertisement;
 using Windows.Storage.Streams;
 
-
+namespace Testclient
+{
     class Publisher
     {
         BluetoothLEAdvertisementPublisher publisher;
@@ -46,3 +47,4 @@ using Windows.Storage.Streams;
             }
         }
     }
+}

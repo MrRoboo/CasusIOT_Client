@@ -131,6 +131,9 @@
     <Compile Include="SocketServer.cs" />
     <Compile Include="Trigger.cs" />
     <Compile Include="GameController.cs" />
+	<Compile Include="Watcher.cs" />
+	<Compile Include="Distance.cs" />
+	<Compile Include="Publisher.cs" />
   </ItemGroup>
   <ItemGroup>
     <AppxManifest Include="Package.appxmanifest">
