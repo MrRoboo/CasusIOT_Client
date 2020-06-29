@@ -99,7 +99,7 @@ namespace Testclient
             {
                 if (timePressed == null)
                 {
-                    timePressed = new DateTime();
+                    timePressed = DateTime.Now;
                 }
                 Debug.WriteLine(resultData);
                 gameController.SetTouchState("standby");
