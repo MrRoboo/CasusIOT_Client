@@ -20,6 +20,8 @@ namespace Testclient
         private Watcher watcher;
         private Publisher publisher;
 
+        private DateTime triggerTime;
+
 
         public GameController(SocketClient client, Led ledGroen, Led ledRood)
         {
@@ -47,6 +49,7 @@ namespace Testclient
                 sensorActive = true;
                 ledGroen.led.Write(GpioPinValue.Low);
                 ledRood.led.Write(GpioPinValue.High);
+                triggerTime = DateTime.Now;
                 watcher.startWatcher();
                 
             } else if ( stateData == "off")
@@ -77,7 +80,7 @@ namespace Testclient
             {
                 double dist = watcher.GetDistance();
                 await Task.Delay(1000);
-                client.Verstuur("f" + force.ToString() + "Afstand: " + dist + "DateTime Pressed: " + pressed);
+                client.Verstuur("force:" + force.ToString() + "trigger" + triggerTime + "pressed:" + pressed + "distance:" + dist);
                 publisher.stopMeting();
                 watcher.stopMeting();
                 watcher.clearDistance();
