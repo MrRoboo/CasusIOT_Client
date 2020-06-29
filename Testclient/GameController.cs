@@ -80,7 +80,7 @@ namespace Testclient
             {
                 double dist = watcher.GetDistance();
                 await Task.Delay(1000);
-                client.Verstuur("force:" + force.ToString() + "trigger" + triggerTime + "pressed:" + pressed + "distance:" + dist);
+                client.Verstuur("force:" + force.ToString() + "trigger:" + triggerTime + "pressed:" + pressed + "distance:" + dist);
                 publisher.stopMeting();
                 watcher.stopMeting();
                 watcher.clearDistance();
