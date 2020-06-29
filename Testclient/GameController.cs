@@ -11,6 +11,7 @@ namespace Testclient
     class GameController
     {
         public string gameState = "pending";
+        public bool sensorActive;
         private SocketClient client;
 
         private Led ledRood;
@@ -27,6 +28,7 @@ namespace Testclient
             this.client = client;
             this.watcher = new Watcher();
             this.publisher = new Publisher();
+            sensorActive = false;
         }
 
 
@@ -42,6 +44,7 @@ namespace Testclient
         {
             if (stateData == "touch")
             {
+                sensorActive = true;
                 ledGroen.led.Write(GpioPinValue.Low);
                 ledRood.led.Write(GpioPinValue.High);
                 watcher.startWatcher();
@@ -70,12 +73,17 @@ namespace Testclient
         {
             //string[] list = new string[] { };
             //await WaitUntilAsync(() => list.Count() == 5);
-            double dist = watcher.GetDistance();
-            await Task.Delay(1000);
-            client.Verstuur("f" + force.ToString() + "Afstand: " + dist + "DateTime Pressed: " + pressed);
-            publisher.stopMeting();
-            watcher.stopMeting();
-            watcher.clearDistance();
+            if (sensorActive)
+            {
+                double dist = watcher.GetDistance();
+                await Task.Delay(1000);
+                client.Verstuur("f" + force.ToString() + "Afstand: " + dist + "DateTime Pressed: " + pressed);
+                publisher.stopMeting();
+                watcher.stopMeting();
+                watcher.clearDistance();
+
+                sensorActive = false;
+            }
         }
     }
 }
