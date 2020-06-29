@@ -15,7 +15,7 @@ namespace Testclient
     public class SocketClient
     {
         //Aanpassen naar eigen netwerk:
-        private const string IP = "RaspberryPI3_MP"; // Client (eigen adres) vast (adres dat niet mee doet!)        
+        private const string IP = "RaspberryPI3_KR"; // Client (eigen adres) vast (adres dat niet mee doet!)        
 
         private readonly string _ip;
         private readonly int _port;

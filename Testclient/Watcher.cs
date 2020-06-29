@@ -56,6 +56,7 @@ namespace Testclient
         public void startWatcher()
         {
             _watcher.Start();
+            Debug.WriteLine("start watcher");
         }
 
         private void OnAdvertisementReceived(BluetoothLEAdvertisementWatcher watcher, BluetoothLEAdvertisementReceivedEventArgs eventArgs)
@@ -102,6 +103,7 @@ namespace Testclient
         public double GetDistance()
         {
             Task.Delay(5000).Wait();
+            Debug.WriteLine("Get distance: " + this._dist);
             return this._dist;
         }
 
