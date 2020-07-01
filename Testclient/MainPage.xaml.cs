@@ -31,7 +31,8 @@ namespace Testclient
         SocketServer socketServer;
 
         Raspberry raspberry = new Raspberry();
-        Led led;
+        Led ledGroen;
+        Led ledRood;
         GameController gameController;
 
         ForceSensor forceSensor;
@@ -58,11 +59,12 @@ namespace Testclient
             socketServer.OnDataOntvangen += socketServer.Server_OnDataOntvangen;
 
             //init leds
-            led = new Led(raspberry, 21);
-            led.led.Write(GpioPinValue.Low);
+            ledGroen = new Led(raspberry, 21); //gpio 21 = groene led
+            ledRood = new Led(raspberry, 20); //gpio 20 = rode led
+            ledRood.led.Write(GpioPinValue.Low);
 
             //Init game controller
-            gameController = new GameController(socketClient);
+            gameController = new GameController(socketClient, ledGroen, ledRood);
 
             //Init force sensor
             forceSensor = new ForceSensor(sensorPin, gpioPin);
@@ -71,7 +73,6 @@ namespace Testclient
             InitButtons();
             Thread main = new Thread(new ThreadStart(Aansturen));
             main.Start();
-            //Aansturen();
         }
 
 
@@ -95,6 +96,12 @@ namespace Testclient
                     {
                         gameController.SetGameState(dataString);
                     } else if ( dataString == "touch")
+                    {
+                        gameController.SetTouchState(dataString);
+                    } else if ( dataString == "off")
+                    {
+                        gameController.SetTouchState(dataString);
+                    } else if (dataString == "publisher")
                     {
                         gameController.SetTouchState(dataString);
                     }

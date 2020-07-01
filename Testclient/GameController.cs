@@ -4,19 +4,33 @@ using System.Linq;
 using System.Net.Sockets;
 using System.Text;
 using System.Threading.Tasks;
+using Windows.Devices.Gpio;
 
 namespace Testclient
 {
     class GameController
     {
         public string gameState = "pending";
-        public bool touchState = false;
+        public bool sensorActive;
         private SocketClient client;
 
+        private Led ledRood;
+        private Led ledGroen;
 
-        public GameController(SocketClient client)
+        private Watcher watcher;
+        private Publisher publisher;
+
+        private DateTime triggerTime;
+
+
+        public GameController(SocketClient client, Led ledGroen, Led ledRood)
         {
+            this.ledGroen = ledGroen;
+            this.ledRood = ledRood;
             this.client = client;
+            this.watcher = new Watcher();
+            this.publisher = new Publisher();
+            sensorActive = false;
         }
 
 
@@ -32,19 +46,48 @@ namespace Testclient
         {
             if (stateData == "touch")
             {
-                touchState = true;
-            }
-            else
+                sensorActive = true;
+                ledGroen.led.Write(GpioPinValue.Low);
+                ledRood.led.Write(GpioPinValue.High);
+                triggerTime = DateTime.Now;
+                watcher.startWatcher();
+                
+            } else if ( stateData == "off")
             {
-                touchState = false;
+                ledGroen.led.Write(GpioPinValue.High);
+                ledRood.led.Write(GpioPinValue.High);
+            } else if (stateData == "standby")
+            {
+                ledGroen.led.Write(GpioPinValue.High);
+                ledRood.led.Write(GpioPinValue.Low);
+            } else if (stateData == "publisher")
+            {
+                publisher.publish();
             }
         }
 
-
-
-        public void SendForceData(int force)
+        private async Task WaitUntilAsync(Func<bool> func)
         {
-            client.Verstuur("f" + force.ToString());
+            while (!func())
+                await Task.Delay(100);
+        }
+
+        public async void SendForceData(int force, DateTime pressed)
+        {
+            //string[] list = new string[] { };
+            //await WaitUntilAsync(() => list.Count() == 5);
+            if (sensorActive)
+            {
+                double dist = watcher.GetDistance();
+                await Task.Delay(1000);
+                client.Verstuur("force:" + force.ToString() + "trigger:" + triggerTime + "pressed:" + pressed + "distance:" + dist);
+                //publisher.stopMeting();
+                watcher.stopMeting();
+                watcher.clearDistance();
+
+                sensorActive = false;
+            }
+            publisher.stopMeting();
         }
     }
 }
